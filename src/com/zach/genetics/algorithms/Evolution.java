@@ -1,5 +1,6 @@
 package com.zach.genetics.algorithms;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -11,8 +12,9 @@ import com.zach.genetics.Trajectory;
 
 public class Evolution {
 
-	private final double MUTATION_RATE = 0.05; // how often they should mutate
+	private final double MUTATION_RATE = 0.33; // how often they should mutate
 	private final int SIZE; // size of population
+	private final int CLONES;
 
 	private final double DISTANCE; // distance to target from start
 
@@ -32,24 +34,34 @@ public class Evolution {
 
 	private List<Cannon> population, matingPool;
 
-	public Evolution(SelectionMethod pick, int size, double distance) {
+	public Evolution(SelectionMethod pick, int size, int clones, double distance) {
 		this.DISTANCE = distance;
 		this.SIZE = size;
 		this.pick = pick;
+		this.CLONES = clones;
 		rand = new Random();
 		new Trajectory(distance);
 		initializePopulation();
 		nextGeneration();
+
 	}
 
 	public void nextGeneration() {
 		while (!checkForDone()) {
 			fitness();
+			System.out.println("----------------------------------------POPULATION POOL:");
 			printList(population);
-			System.out.println("----------------------------------------MATING POOL:");
+			//System.out.println("----------------------------------------MATING POOL:");
 			generateMatingPool();
+			//printList(matingPool);
 			crossover();
 			mutation();
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException ex) {
+				Thread.currentThread().interrupt();
+			}
+
 		}
 		printList(population);
 	}
@@ -57,7 +69,7 @@ public class Evolution {
 	private boolean checkForDone() {
 		boolean done = false;
 		for (Cannon cannon : population) {
-			if (cannon.getFitness() >= 10000){
+			if (cannon.getFitness() >= 10000) {
 				return true;
 			}
 		}
@@ -69,12 +81,16 @@ public class Evolution {
 
 	private void printList(List<Cannon> list) {
 		Collections.sort(list, new CannonComparator());
+		DecimalFormat df = new DecimalFormat("#.##");
+		int count = 1;
 		for (Cannon cannon : list) {
-			System.out.println("Angle: " + cannon.getAngle());
-			System.out.println("Power: " + cannon.getPower());
-			System.out.println("Distance: " + Trajectory.calculateDistance(cannon.getPower(), cannon.getAngle()));
-			System.out.println("Fitness: " + cannon.getFitness());
-			System.out.println("---------------------------");
+			System.out.println("Cannon #\tAngle(°):\t" + df.format(cannon.getAngle()));
+			System.out.println(count + "\t\tPower(m/s):\t" + df.format(cannon.getPower()));
+			System.out.println("\t\tDistance(m):\t"
+					+ df.format(Trajectory.calculateDistance(cannon.getPower(), cannon.getAngle())));
+			System.out.println("\t\tFitness:\t" + df.format(cannon.getFitness()));
+			System.out.println("-------------------------------------------");
+			count++;
 		}
 	}
 
@@ -100,29 +116,35 @@ public class Evolution {
 	}
 
 	private void crossover() {
-		population.clear();
+		clearAndKeepElite();
 		double power = 1, angle = 1;
+		// boolean success = false;
 		while (population.size() < SIZE) {
 			Cannon[] selection = { selection(), selection() };
-			if (rand.nextBoolean()) { // change power
-				if (rand.nextBoolean()) { // parent 1
-					power = selection[0].getPower();
-				} else { // parent 2
-					power = selection[1].getPower();
-				}
-			} else {
-				if (rand.nextBoolean()) { // change angle
-					angle = selection[0].getAngle();
-				} else {
-					angle = selection[1].getAngle();
-				}
+			if (rand.nextBoolean()) { // parent 1
+				power = selection[0].getPower();
+				angle = selection[1].getAngle();
+			} else { // parent 2
+				power = selection[1].getPower();
+				angle = selection[0].getAngle();
 			}
 			population.add(new Cannon(power, angle));
 		}
 	}
 
+	private void clearAndKeepElite() {
+		Collections.sort(population, new CannonComparator());
+		List<Cannon> temp = new ArrayList<Cannon>();
+		for (int i = 0; i < CLONES; i++)
+			temp.add(population.get(i));
+		population.clear();
+		for (Cannon cannon : temp)
+			population.add(cannon);
+	}
+
 	private Cannon selection() {
 		int choice = rand.nextInt(matingPool.size());
+		//System.out.println("Selection chose cannon # " + choice + ":" + matingPool.get(choice).getFitness());
 		return matingPool.get(choice);
 	}
 
@@ -139,11 +161,11 @@ public class Evolution {
 	}
 
 	private void mutation() {
-		for (Cannon cannon : population) {
+		for (int i = 1; i < population.size(); i++) {
 			if (rand.nextDouble() <= MUTATION_RATE) {
-				cannon.setPower(LOWER_BOUND_POWER + (UPPER_BOUND_POWER - LOWER_BOUND_POWER) * rand.nextDouble());
+				population.get(i).setPower(LOWER_BOUND_POWER + (UPPER_BOUND_POWER - LOWER_BOUND_POWER) * rand.nextDouble());
 			} else if (rand.nextDouble() <= MUTATION_RATE) {
-				cannon.setAngle(LOWER_BOUND_ANGLE + (UPPER_BOUND_ANGLE - LOWER_BOUND_ANGLE) * rand.nextDouble());
+				population.get(i).setAngle(LOWER_BOUND_ANGLE + (UPPER_BOUND_ANGLE - LOWER_BOUND_ANGLE) * rand.nextDouble());
 			}
 		}
 	}
@@ -162,7 +184,7 @@ public class Evolution {
 
 	private void rouletteWheel() {
 		for (Cannon cannon : population) {
-			System.out.println((cannon.getNormalizedFitness() * SIZE));
+			System.out.println((cannon.getNormalizedFitness()));
 
 			if (cannon.getNormalizedFitness() > 0) {
 				System.out.println((cannon.getNormalizedFitness() * SIZE));
@@ -174,7 +196,7 @@ public class Evolution {
 				}
 			}
 		}
-		//printList(matingPool);
+		// printList(matingPool);
 
 		/*
 		 * matingPool = new ArrayList<Cannon>(); List<Cannon> temp = new
@@ -200,7 +222,7 @@ public class Evolution {
 				matingPool.add(population.get(i));
 			}
 		}
-		//printList(matingPool);
+		// printList(matingPool);
 	}
 
 	public List<Cannon> getPopulation() {

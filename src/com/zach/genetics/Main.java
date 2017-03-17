@@ -16,7 +16,7 @@ public class Main extends JFrame{
 		frame.add(new GUI());
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);*/
-		new Evolution(SelectionMethod.RANK, 100, 100);
+		new Evolution(SelectionMethod.RANK, 10, 1, 100);
 	}
 
 }
