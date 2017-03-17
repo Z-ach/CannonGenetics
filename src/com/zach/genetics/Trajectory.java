@@ -16,7 +16,7 @@ public class Trajectory {
 			System.out.println("distance123545645: " + DISTANCE);
 			runOnce =true;
 		}
-		return Math.abs(DISTANCE - (velocity*velocity*Math.sin(Math.toRadians(2 * angle))/GRAVITY));
+		return Math.abs(DISTANCE + (velocity*velocity*Math.sin(Math.toRadians(2 * angle))/GRAVITY));
 	}
 	
 }
