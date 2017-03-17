@@ -19,4 +19,12 @@ public class Trajectory {
 		return Math.abs(DISTANCE + (velocity*velocity*Math.sin(Math.toRadians(2 * angle))/GRAVITY));
 	}
 	
+	public static double getX(double velocity, double angle, double time){
+		return velocity * Math.cos(Math.toRadians(angle)) * time;
+	}
+	
+	public static double getY(double velocity, double angle, double time){
+		return (.5 * GRAVITY * Math.pow(time, 2)) + (velocity * Math.sin(Math.toRadians(angle)) * time);
+	}
+	
 }

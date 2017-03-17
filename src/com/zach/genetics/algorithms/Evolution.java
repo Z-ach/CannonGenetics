@@ -47,23 +47,12 @@ public class Evolution {
 	}
 
 	public void nextGeneration() {
-		while (!checkForDone()) {
-			fitness();
-			System.out.println("----------------------------------------POPULATION POOL:");
-			printList(population);
-			//System.out.println("----------------------------------------MATING POOL:");
-			generateMatingPool();
-			//printList(matingPool);
-			crossover();
-			mutation();
-			try {
-				Thread.sleep(100);
-			} catch (InterruptedException ex) {
-				Thread.currentThread().interrupt();
-			}
-
-		}
+		fitness();
+		System.out.println("----------------------------------------POPULATION POOL:");
 		printList(population);
+		generateMatingPool();
+		crossover();
+		mutation();
 	}
 
 	private boolean checkForDone() {
@@ -144,7 +133,8 @@ public class Evolution {
 
 	private Cannon selection() {
 		int choice = rand.nextInt(matingPool.size());
-		//System.out.println("Selection chose cannon # " + choice + ":" + matingPool.get(choice).getFitness());
+		// System.out.println("Selection chose cannon # " + choice + ":" +
+		// matingPool.get(choice).getFitness());
 		return matingPool.get(choice);
 	}
 
@@ -163,9 +153,11 @@ public class Evolution {
 	private void mutation() {
 		for (int i = 1; i < population.size(); i++) {
 			if (rand.nextDouble() <= MUTATION_RATE) {
-				population.get(i).setPower(LOWER_BOUND_POWER + (UPPER_BOUND_POWER - LOWER_BOUND_POWER) * rand.nextDouble());
+				population.get(i)
+						.setPower(LOWER_BOUND_POWER + (UPPER_BOUND_POWER - LOWER_BOUND_POWER) * rand.nextDouble());
 			} else if (rand.nextDouble() <= MUTATION_RATE) {
-				population.get(i).setAngle(LOWER_BOUND_ANGLE + (UPPER_BOUND_ANGLE - LOWER_BOUND_ANGLE) * rand.nextDouble());
+				population.get(i)
+						.setAngle(LOWER_BOUND_ANGLE + (UPPER_BOUND_ANGLE - LOWER_BOUND_ANGLE) * rand.nextDouble());
 			}
 		}
 	}

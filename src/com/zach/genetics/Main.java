@@ -10,13 +10,15 @@ public class Main extends JFrame{
 	private static final long serialVersionUID = 3368592664286654592L;
 
 	public static void main(String[] args) {
-/*		JFrame frame = new JFrame("Cannon Genetics");
+		JFrame frame = new JFrame("Cannon Genetics");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setSize(800, 640);
-		frame.add(new GUI());
+		frame.add(new GUI(800,640));
+
+		frame.setResizable(false);
+		frame.pack();
 		frame.setLocationRelativeTo(null);
-		frame.setVisible(true);*/
-		new Evolution(SelectionMethod.RANK, 10, 1, 100);
+		frame.setVisible(true);
+		//new Evolution(SelectionMethod.RANK, 10, 1, 100);
 	}
 
 }
