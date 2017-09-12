@@ -12,7 +12,7 @@ import com.zach.genetics.Trajectory;
 
 public class Evolution {
 
-	private final double MUTATION_RATE = 0.33; // how often they should mutate
+	private final double MUTATION_RATE = 0.3; // how often they should mutate
 	private final int SIZE; // size of population
 	private final int CLONES;
 

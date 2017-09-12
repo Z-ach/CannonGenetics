@@ -10,6 +10,7 @@ public class Ball {
 	public final int SIZE = 25;
 
 	private int x, y;
+	private int modifier = 8;
 
 	private final double velocity, angle;
 
@@ -26,7 +27,6 @@ public class Ball {
 	}
 
 	public void updateCoords(double time) {
-		time *= 80;
 		x = ((int) Trajectory.getX(velocity, angle, time / 1000));
 		y = ((600 - SIZE) - (int) Trajectory.getY(velocity, angle, time / 1000));
 
